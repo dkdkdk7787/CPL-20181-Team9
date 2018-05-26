@@ -3,47 +3,55 @@
 #include <Wire.h>
 #include "Adafruit_MPR121.h"
 
-uint8_t touch_flag = 0;
-uint8_t press_flag = 1;
+void setup();
+void loop();
+
+uint8_t touch_flag = 1;
+uint8_t press_flag = 0;
 uint8_t mp3_flag = 0;
 uint8_t current_mp3 = -1;
 
-Adafruit_MPR121 cap;
+Adafruit_MPR121 cap = Adafruit_MPR121();
 uint16_t lasttouched = 0;
 uint16_t currtouched = 0;
 
 void setup() {
-  Serial.begin(9600);     
+  Serial.begin(9600);    
 
-  //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ터치 센서 초기화ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+  while (!Serial)
+  { // needed to keep leonardo/micro from starting too fast!
+      delay(10);
+  }
+
+  Serial.println("initialize start");
+
+   //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ터치 센서 초기화ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
   if(touch_flag > 0)
   {
-    while (!Serial)
-    { // needed to keep leonardo/micro from starting too fast!
-      delay(10);
-    }
-
-    cap = Adafruit_MPR121();
-
+    Serial.println("Adafruit_MPR121 end");
     if (!cap.begin(0x5A))
     {
       Serial.println("MPR121 not found, check wiring?");
-      while (1);
     }
     Serial.println("MPR121 found!");
   }
 
+  Serial.println("df init start");
   //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡdf 플레이어 초기화ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
   if(mp3_flag > 0)
   {
-    mp3_set_serial(Serial); // DFPlayer-mini mp3 module 시리얼 세팅
+    //mp3_set_serial(Serial); // DFPlayer-mini mp3 module 시리얼 세팅
     delay(1);               // 볼륨값 적용을 위한 delay
-    mp3_set_volume(30);     // 볼륨조절 값 0~30
+    //mp3_set_volume(30);     // 볼륨조절 값 0~30
   }
+
+  
+  Serial.println("initialize complete");
 }
 
 void loop() {
 
+  
    if(touch_flag > 0)
    {
      currtouched = cap.touched();
@@ -77,7 +85,7 @@ void loop() {
     
  
   
-  
+  /*
   int r0 = analogRead(A0);
  // int r1 = analogRead(s1);
 
@@ -103,4 +111,5 @@ void loop() {
     // Serial.print("0015 play");
     //mp3_play (15);    //0002 파일 플레이 , next
     //delay(3000);
+   
 }
